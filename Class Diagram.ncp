@@ -1,0 +1,372 @@
+<Project>
+  <Name>Final</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.ClassDiagram" assembly="NClass.DiagramEditor, Version=2.8.0.1, Culture=neutral, PublicKeyToken=null">
+    <Name>Final</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>Main</Name>
+        <Access>Public</Access>
+        <Location left="474" top="11" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public string description</Member>
+        <Member type="Field">public Location location</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Location</Name>
+        <Access>Public</Access>
+        <Location left="474" top="280" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public int days</Member>
+        <Member type="Field">public string name</Member>
+        <Member type="Field">int itemAmount = rand%3+1</Member>
+        <Member type="Field">string [] nameOption</Member>
+        <Member type="Method">public void newDay()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Enemy</Name>
+        <Access>Public</Access>
+        <Location left="150" top="280" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public int Strength</Member>
+        <Member type="Field">public int Defense</Member>
+        <Member type="Field">public int Wits</Member>
+        <Member type="Field">public string name</Member>
+        <Member type="Field">string [] names</Member>
+        <Member type="Constructor">public Enemy(int Level)</Member>
+        <Member type="Method">public void goAttack(int attack, int enemyAttack, User user, Enemy enemy)</Member>
+        <Member type="Method">public void sneak(int sneakDif, User user, Enemy enemy)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Items</Name>
+        <Access>Public</Access>
+        <Location left="732" top="256" />
+        <Size width="162" height="264" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public string Name</Member>
+        <Member type="Field">public string itemType</Member>
+        <Member type="Field">public int restoreAmount</Member>
+        <Member type="Field">public int defenseAmount</Member>
+        <Member type="Field">public int attackAmount</Member>
+        <Member type="Field">string[] itemType</Member>
+        <Member type="Field">string[] foodType</Member>
+        <Member type="Field">string[] drinkType</Member>
+        <Member type="Field">string[] clothingType</Member>
+        <Member type="Field">string[] weaponType</Member>
+        <Member type="Field">string[] healingType</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>User</Name>
+        <Access>Public</Access>
+        <Location left="474" top="578" />
+        <Size width="162" height="315" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public int getHealth()</Member>
+        <Member type="Method">public int getStrength()</Member>
+        <Member type="Method">public int getDefense()</Member>
+        <Member type="Method">public int getStealth()</Member>
+        <Member type="Method">public int getLevel()</Member>
+        <Member type="Method">public void changeHealth(int damage)</Member>
+        <Member type="Method">public void gainXp(int xp)</Member>
+        <Member type="Method">public void gainHealth(int restore)</Member>
+        <Member type="Method">public void gainHunger(int restore)</Member>
+        <Member type="Method">public void gainDrink(int restore)</Member>
+        <Member type="Method">public void printVitals()</Member>
+        <Member type="Method">public void newDayChange()</Member>
+        <Member type="Method">public void printEquipables()</Member>
+        <Member type="Method">public void equipItem()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Inventory</Name>
+        <Access>Public</Access>
+        <Location left="732" top="615" />
+        <Size width="207" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">Item[] hands = {null, null}</Member>
+        <Member type="Field">Item clothing = null</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Vitals</Name>
+        <Access>Public</Access>
+        <Location left="139" top="601" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public int thirst</Member>
+        <Member type="Field">public int Hunger</Member>
+        <Member type="Field">public int Health</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Stats</Name>
+        <Access>Public</Access>
+        <Location left="474" top="973" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">public int strength</Member>
+        <Member type="Field">public int defense</Member>
+        <Member type="Field">public int xp</Member>
+        <Member type="Field">public int stealth</Member>
+        <Member type="Field">public int level</Member>
+        <Member type="Method">public void xpGain(int xp)</Member>
+        <Member type="Method">public void levelGain()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Containers />
+    <Relationships>
+      <Relationship type="Association" first="0" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>0</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="2" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="4" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="3" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1..3</StartMultiplicity>
+        <EndMultiplicity>0..*</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="3" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>0</StartMultiplicity>
+        <EndMultiplicity>0..3</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="5" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="7" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+      <Relationship type="Association" first="6" second="4">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+        <StartMultiplicity>1</StartMultiplicity>
+        <EndMultiplicity>1</EndMultiplicity>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.ClassDiagram" assembly="NClass.DiagramEditor, Version=2.8.0.1, Culture=neutral, PublicKeyToken=null">
+    <Name>Untitled</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>MainPage</Name>
+        <Access>Public</Access>
+        <Location left="95" top="117" />
+        <Size width="162" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public void showChoices()</Member>
+        <Member type="Method">public void showHistory()</Member>
+        <Member type="Method">public void showPrediction()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>PitchEntry</Name>
+        <Access>Public</Access>
+        <Location left="442" top="384" />
+        <Size width="162" height="247" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">int entryID</Member>
+        <Member type="Field">float pitchVelocity</Member>
+        <Member type="Field">float horizontalBreak</Member>
+        <Member type="Field">float verticalBreak</Member>
+        <Member type="Field">int pitchLocation</Member>
+        <Member type="Field">string batterHandedness</Member>
+        <Member type="Field">int spinRate</Member>
+        <Member type="Field">int? pitcherID</Member>
+        <Member type="Field">int? batterID</Member>
+        <Member type="Method">public void predictOutcome()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>PredictOutcome</Name>
+        <Access>Public</Access>
+        <Location left="789" top="91" />
+        <Size width="162" height="179" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">int predictionID</Member>
+        <Member type="Field">string prediction</Member>
+        <Member type="Field">float probability</Member>
+        <Member type="Field">PitchEntry pitchEntry</Member>
+        <Member type="Method">public void DisplayOutcome()</Member>
+        <Member type="Method">public void AddToHistory()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>History</Name>
+        <Access>Public</Access>
+        <Location left="75" top="442" />
+        <Size width="202" height="128" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">PredictOutcome[] outcomes</Member>
+        <Member type="Field">string filter</Member>
+        <Member type="Method">public void displayPitches(string filter)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IPlayer</Name>
+        <Access>Public</Access>
+        <Location left="442" top="893" />
+        <Size width="162" height="129" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">int playerID { get; set; }</Member>
+        <Member type="Property">string name { get; set; }</Member>
+        <Member type="Property">string handedness { get; set; }</Member>
+        <Member type="Method">void getPlayerModel()</Member>
+      </Entity>
+      <Entity type="Class">
+        <Name>Pitcher</Name>
+        <Access>Public</Access>
+        <Location left="267" top="795" />
+        <Size width="162" height="94" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">string[] pitchTypes</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Batter</Name>
+        <Access>Public</Access>
+        <Location left="620" top="795" />
+        <Size width="162" height="94" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">int[] hotZones</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Containers />
+    <Relationships>
+      <Relationship type="Association" first="0" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="1" second="2">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="0" second="2">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="0" second="3">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="2" second="3">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="4" second="5">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Aggregation</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="4" second="6">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Aggregation</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="6" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+      <Relationship type="Association" first="5" second="1">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <Direction>Unidirectional</Direction>
+        <AssociationType>Association</AssociationType>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>
