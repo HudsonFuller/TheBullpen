@@ -11,19 +11,22 @@ connect = sqlite3.connect('database.db')
 connect.execute("""
 CREATE TABLE IF NOT EXISTS PitchEntries (
     pitchEntryID INTEGER PRIMARY KEY AUTOINCREMENT,
+    pitcherHandedness TEXT NOT NULL,
+    batterHandedness TEXT NOT NULL,
     pitchType TEXT NOT NULL,
     velocity REAL NOT NULL,
-    spinRate REAL NOT NULL,
     breakHorizontal REAL NOT NULL,
     breakVertical REAL NOT NULL,
-    zone INTEGER NOT NULL
+    zone INTEGER NOT NULL,
+    balls INTEGER NOT NULL,
+    strikes INTEGER NOT NULL
 );
 """)
 connect.execute("""
 CREATE TABLE IF NOT EXISTS Predictions (
     predictionID INTEGER PRIMARY KEY AUTOINCREMENT,
     result TEXT NOT NULL,
-    hitintopplayprob TEXT NOT NULL,
+    contactprob TEXT NOT NULL,
     strikeprob TEXT NOT NULL,
     ballprob TEXT NOT NULL,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -37,44 +40,45 @@ CREATE TABLE IF NOT EXISTS Predictions (
 @app.route('/add_pitch_entry', methods=['POST'])
 def add_pitch_entry():
     data = request.json
+    pitcher_handedness = data.get('pitcherHandedness')
+    batter_handedness = data.get('batterHandedness')
     pitch_type = data.get('pitchType')
     velocity = data.get('velocity')
-    spin_rate = data.get('spinRate')
     break_horizontal = data.get('breakHorizontal')
     break_vertical = data.get('breakVertical')
     zone = data.get('zone')
+    balls = data.get('balls')
+    strikes = data.get('strikes')
 
     with sqlite3.connect("database.db") as database:
         cursor = database.cursor()
         cursor.execute("""
-            INSERT INTO PitchEntries (pitchType, velocity, spinRate, breakHorizontal, breakVertical, zone)
-            VALUES (?, ?, ?, ?, ?, ?)
-        """, (pitch_type, velocity, spin_rate, break_horizontal, break_vertical, zone))
+            INSERT INTO PitchEntries (pitcherHandedness, batterHandedness, pitchType, velocity, breakHorizontal, breakVertical, zone, balls, strikes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (pitcher_handedness, batter_handedness, pitch_type, velocity, break_horizontal, break_vertical, zone, balls, strikes))
         database.commit()
 
-    return jsonify({'message': 'Pitch entry added successfully!'})
+    pitch_entry_id = cursor.lastrowid
 
-
-# Endpoint: Make a prediction
-@app.route('/make_prediction', methods=['POST'])
-def make_prediction():
-    data = request.json
-    pitch_entry_id = data.get('pitchEntryID')
-    
     # Simulate prediction logic (replace with ML model logic)
     result = "strike"  # Example result
-    probabilities = {"strike": 0.7, "ball": 0.2, "hit": 0.1}  # Example probabilities
+    probabilities = {"strike": 0.7, "ball": 0.2, "contact": 0.1}  # Example probabilities
 
+    # Insert prediction into Predictions database
     timestamp = datetime.datetime.now()
     with sqlite3.connect("database.db") as database:
         cursor = database.cursor()
         cursor.execute("""
-            INSERT INTO Predictions (result, hitintopplayprob, strikeprob, ballprob, timestamp, pitchEntryID)
+            INSERT INTO Predictions (result, contactprob, strikeprob, ballprob, timestamp, pitchEntryID)
             VALUES (?, ?, ?, ?, ?, ?)        
-        """, (result, probabilities["hit"], probabilities["strike"], probabilities["ball"], datetime.datetime.now(), pitch_entry_id))
+        """, (result, probabilities["contact"], probabilities["strike"], probabilities["ball"], datetime.datetime.now(), pitch_entry_id))
         database.commit()
 
-    return jsonify({'message': 'Prediction made successfully!', 'result': result, 'probabilities': probabilities})
+    return jsonify({
+        'message': 'Pitch entry added and prediction made successfully!',
+        'pitchEntryID': pitch_entry_id,
+        'prediction': {'result': result, 'probabilities': probabilities}
+    })
 
 
 # Endpoint: Get prediction history
@@ -85,8 +89,8 @@ def get_history(predictionID):
         with sqlite3.connect("database.db") as connect:
             cursor = connect.cursor()
             cursor.execute("""
-                SELECT p.predictionID, p.result, p.hitintopplayprob, p.strikeprob, p.ballprob, p.timestamp,
-                    pe.pitchType, pe.velocity, pe.spinRate, pe.breakHorizontal, pe.breakVertical, pe.zone
+                SELECT p.predictionID, p.result, p.contactprob, p.strikeprob, p.ballprob, p.timestamp, pe.pitcherHandedness,
+                    pe.batterHandedness, pe.pitchType, pe.velocity, pe.breakHorizontal, pe.breakVertical, pe.zone, pe.balls, pe.strikes
                 FROM Predictions p
                 JOIN PitchEntries pe ON p.pitchEntryID = pe.pitchEntryID
                 WHERE p.predictionID = ?
