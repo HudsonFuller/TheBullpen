@@ -17,8 +17,8 @@ CREATE TABLE IF NOT EXISTS PitchEntries (
     batterHandedness TEXT NOT NULL,
     pitchType TEXT NOT NULL,
     velocity REAL NOT NULL,
-    breakHorizontal REAL NOT NULL,
-    breakVertical REAL NOT NULL,
+    horizontalBreak REAL NOT NULL,
+    verticalBreak REAL NOT NULL,
     zone INTEGER NOT NULL,
     balls INTEGER NOT NULL,
     strikes INTEGER NOT NULL
@@ -46,8 +46,8 @@ def add_pitch_entry():
     batter_handedness = data.get('batterHandedness')
     pitch_type = data.get('pitchType')
     velocity = data.get('velocity')
-    break_horizontal = data.get('breakHorizontal')
-    break_vertical = data.get('breakVertical')
+    break_horizontal = data.get('horizontalBreak')
+    break_vertical = data.get('verticalBreak')
     zone = data.get('zone')
     balls = data.get('balls')
     strikes = data.get('strikes')
@@ -55,7 +55,7 @@ def add_pitch_entry():
     with sqlite3.connect("database.db") as database:
         cursor = database.cursor()
         cursor.execute("""
-            INSERT INTO PitchEntries (pitcherHandedness, batterHandedness, pitchType, velocity, breakHorizontal, breakVertical, zone, balls, strikes)
+            INSERT INTO PitchEntries (pitcherHandedness, batterHandedness, pitchType, velocity, horizontalBreak, verticalBreak, zone, balls, strikes)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (pitcher_handedness, batter_handedness, pitch_type, velocity, break_horizontal, break_vertical, zone, balls, strikes))
         database.commit()
@@ -74,6 +74,8 @@ def add_pitch_entry():
     outcomes = list(probabilities.keys())
     values = list(probabilities.values())
     result = random.choices(outcomes, weights=values, k=1)[0]
+    print(probabilities)
+    print(result)
 
     # Insert prediction into Predictions database
     timestamp = datetime.datetime.now()
@@ -101,7 +103,7 @@ def get_history(predictionID):
             cursor = connect.cursor()
             cursor.execute("""
                 SELECT p.predictionID, p.result, p.contactprob, p.strikeprob, p.ballprob, p.timestamp, pe.pitcherHandedness,
-                    pe.batterHandedness, pe.pitchType, pe.velocity, pe.breakHorizontal, pe.breakVertical, pe.zone, pe.balls, pe.strikes
+                    pe.batterHandedness, pe.pitchType, pe.velocity, pe.horizontalBreak, pe.verticalBreak, pe.zone, pe.balls, pe.strikes
                 FROM Predictions p
                 JOIN PitchEntries pe ON p.pitchEntryID = pe.pitchEntryID
                 WHERE p.predictionID = ?
