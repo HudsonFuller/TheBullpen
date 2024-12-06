@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 import sqlite3
 import datetime
+from model import getResult, refresh_data
+import random
 
 app = Flask(__name__)
 
@@ -60,9 +62,18 @@ def add_pitch_entry():
 
     pitch_entry_id = cursor.lastrowid
 
-    # Simulate prediction logic (replace with ML model logic)
-    result = "strike"  # Example result
-    probabilities = {"strike": 0.7, "ball": 0.2, "contact": 0.1}  # Example probabilities
+    # Use ML model to create prediction
+    pitch_input = [velocity, zone, break_horizontal, break_vertical, balls, strikes]
+    prediction = getResult(pitch_input)
+
+    # Convert 2d array into dictionary
+    labels = ['ball', 'contact', 'strike']
+    probabilities = {label: float(val) for label, val in zip(labels, prediction.flatten())}
+
+    # Use probabilities to get a random result of pitch
+    outcomes = list(probabilities.keys())
+    values = list(probabilities.values())
+    result = random.choices(outcomes, weights=values, k=1)[0]
 
     # Insert prediction into Predictions database
     timestamp = datetime.datetime.now()
@@ -121,4 +132,7 @@ def clear_history():
 
 # Run the Flask server
 if __name__ == '__main__':
+    # Intialize and train model when server is ran
+    refresh_data()
+
     app.run(debug=True)
