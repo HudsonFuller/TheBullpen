@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 import re
-import requests # type: ignore
+import requests 
 
 all_buttons = []
 
