@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+import requests
+import re
 
 all_buttons = []
 
@@ -9,6 +11,15 @@ def button_press(button, row, col):
     for item in all_buttons:
         item.config(bg = "lightblue")
     button.config(bg="red")
+def zoneChoice():
+    for k in range(0,len(all_buttons)):
+        if(all_buttons[k].cget("bg") == "red"):
+            if k<8:
+                return k+1
+            elif k>8:
+                return k+2
+            else:
+                return 0
     
 def create_buttons(canvas, grid_size, offset=(0, 0), button_size=20, gap=5, color="lightblue"):
     buttons = []
@@ -26,6 +37,85 @@ def create_buttons(canvas, grid_size, offset=(0, 0), button_size=20, gap=5, colo
             all_buttons.append(button)
         buttons.append(row_buttons)
     return buttons
+
+def post_request():
+    data = {
+        "pitcherHandedness" : input_fields["Pitcher Hand"].get(),
+        "batterHandedness" : input_fields["Batter Hand"].get(),
+        "pitchType" : input_fields["Pitch Type"].get(),
+        "velocity" : input_fields["Velocity"].get(),
+        "horizontalBreak" : input_fields["Horizontal Break"].get(),
+        "verticalBreak" : input_fields["Vertical Break"].get(),
+        "zone" : zoneChoice(),
+        "balls" : input_fields["Balls"].get(),
+        "strikes" : input_fields["Strikes"].get(),
+    }
+    try:
+        response = requests.post('https://127.0.0.1.:5000/api/data', json=data)
+        response_data = response.json()
+        print(response_data)
+    except requests.exceptions.RequestException as e:
+        print(e)
+    
+def validate_inputs():
+    # Dictionary to store regex patterns for each input field
+    regex_patterns = {
+        "Pitcher Hand": r"^(left|right)$",  
+        "Batter Hand": r"^(left|right)$",  
+        "Pitch Type": r"^.+$", #non empty
+        "Velocity": r"^\d+(\.\d{1,2})?$", #number
+        "Horizontal Break": r"^-?\d+(\.\d{1,2})?$",  #number
+        "Vertical Break": r"^-?\d+(\.\d{1,2})?$",  #number
+        "Balls": r"^\d+$",  #whole number
+        "Strikes": r"^\d+$",  #whole number
+    }
+    for label_text, input_field in input_fields.items():
+        user_input = input_field.get()  # Get the input from the field
+        pattern = regex_patterns.get(label_text)  # Get the corresponding regex pattern
+
+        # If there is a regex pattern, apply it
+        if pattern and not re.match(pattern, user_input):
+            response_label.config(text=f"Invalid input for '{label_text}'")  # Show error message
+            return  # Stop if there's an invalid input
+
+        # Additional validation for the 'Velocity' field
+        if label_text == "Velocity":
+            try:
+                velocity_value = float(user_input)
+                min_velocity = 30
+                max_velocity = 110
+                if velocity_value < min_velocity or velocity_value > max_velocity:
+                    response_label.config(text=f"Velocity must be between {min_velocity} and {max_velocity}")
+                    return  # Stop if velocity is out of range
+            except ValueError:
+                response_label.config(text="Velocity must be a valid number")
+                return
+        if label_text == "Horizontal Break":
+            break_value = float(user_input)
+            if break_value <-3 or break_value > 3:
+                response_label.config(text=f"Horizontal Break must be between -3 and 3")
+                return
+        if label_text == "Vertical Break":
+            break_value = float(user_input)
+            if break_value <-3 or break_value > 2:
+                response_label.config(text=f"Vertical Break must be between -3 and 2")
+                return
+        if label_text == "Balls":
+            ball_count = int(user_input)
+            if ball_count < 0 or ball_count > 4:
+                response_label.config(text=f"Balls must be between 0 and 4")
+                return
+        if label_text == "Strikes":
+            strike_count = int(user_input)
+            if strike_count < 0 or strike_count > 2:
+                response_label.config(text=f"Strikes must be between 0 and 2")
+                return
+    if zoneChoice() == 0:
+        response_label.config(text="Please select a zone")
+        return
+    post_request()
+
+    response_label.config(text="All inputs are valid, Sending to Server")
 
 # Initialize the main window
 root = tk.Tk()
@@ -45,9 +135,9 @@ frame_history.place(relx=0.7, relwidth=0.3, relheight=1.0, y=0)  # Position on r
 frame_input_container = tk.Frame(frame_left)
 frame_input_container.grid(row=0, column=0, sticky="nsew", padx=10, pady=10)
 
-frame_input_container.grid_columnconfigure(0, weight=1)  # Left side for Batter Profiles
-frame_input_container.grid_columnconfigure(1, weight=1)  # Middle for Pitch Information
-frame_input_container.grid_columnconfigure(2, weight=1)  # Right side for Strike Zone
+frame_input_container.grid_columnconfigure(0, weight=1)  # Left side Regex 
+frame_input_container.grid_columnconfigure(0, weight=1)  # Middle for Pitch Information
+frame_input_container.grid_columnconfigure(1, weight=1)  # Right side for Strike Zone
 
 # Pitch Information Label (above the profiles)
 pitch_info_title_label = tk.Label(frame_input_container, text="Pitch Information", font=("Helvetica", 14, "bold"))
@@ -57,20 +147,20 @@ pitch_info_title_label.grid(row=0, column=0, columnspan=3, pady=(10, 10))
 frame_input_top = tk.Frame(frame_input_container)
 frame_input_top.grid(row=1, column=0, sticky="nsew", padx=5, pady=(5, 5))
 
-profile_label = tk.Label(frame_input_top, text="Select Player Profiles", font=("Helvetica", 12, "bold"))
-profile_label.grid(row=0, column=0, columnspan=2, pady=5)
+validation_label = tk.Label(frame_input_top, text="Validation", font=("Helvetica", 12, "bold"))
+validation_label.grid(row=0, column=0, columnspan=2, pady=5)
 
-# Pitcher Profile Selection
-pitcher_label = tk.Label(frame_input_top, text="Pitcher Profile", font=("Helvetica", 12))
-pitcher_label.grid(row=1, column=0, sticky="e", padx=5, pady=5)
-pitcher_option = ttk.Combobox(frame_input_top, values=["Option 1", "Option 2"], font=("Helvetica", 12))
-pitcher_option.grid(row=1, column=1, padx=5, pady=5)
+# # Pitcher Profile Selection
+response_label = tk.Label(frame_input_top, text="", font=("Helvetica", 12))
+response_label.grid(row=1, column=0, sticky="e", padx=5, pady=5)
+# pitcher_option = ttk.Combobox(frame_input_top, values=["Option 1", "Option 2"], font=("Helvetica", 12))
+# pitcher_option.grid(row=1, column=1, padx=5, pady=5)
 
-# Batter Profile Selection
-batter_label = tk.Label(frame_input_top, text="Batter Profile", font=("Helvetica", 12))
-batter_label.grid(row=2, column=0, sticky="e", padx=5, pady=5)
-batter_option = ttk.Combobox(frame_input_top, values=["Option 1", "Option 2"], font=("Helvetica", 12))
-batter_option.grid(row=2, column=1, padx=5, pady=5)
+# # Batter Profile Selection
+# batter_label = tk.Label(frame_input_top, text="Batter Profile", font=("Helvetica", 12))
+# batter_label.grid(row=2, column=0, sticky="e", padx=5, pady=5)
+# batter_option = ttk.Combobox(frame_input_top, values=["Option 1", "Option 2"], font=("Helvetica", 12))
+# batter_option.grid(row=2, column=1, padx=5, pady=5)
 
 # Input Pitch Information Section (Bottom Left - Column 1)
 frame_input_bottom = tk.Frame(frame_input_container)
@@ -80,8 +170,11 @@ frame_input_bottom.grid(row=1, column=1, sticky="nsew", padx=5, pady=(5, 5))
 pitch_info_label = tk.Label(frame_input_bottom, text="Input Pitch Information", font=("Helvetica", 14, "bold"))
 pitch_info_label.grid(row=0, column=0, columnspan=2, pady=(5, 10))
 
+
 # Input fields for Pitch Information (aligned to the left)
-labels = ["Handedness of Pitcher", "Pitch Type", "Velocity", "Spin Rate", "Horizontal Break", "Vertical Break"]
+labels = ["Pitcher Hand", "Batter Hand","Pitch Type", "Velocity", "Horizontal Break", "Vertical Break", "Balls", "Strikes"]
+input_fields = {}
+
 for i, label_text in enumerate(labels, start=1):
     label = tk.Label(frame_input_bottom, text=label_text, font=("Helvetica", 12))
     label.grid(row=i, column=0, sticky="e", padx=5, pady=3)
@@ -89,6 +182,7 @@ for i, label_text in enumerate(labels, start=1):
         input_field = ttk.Combobox(frame_input_bottom, values=["Option 1", "Option 2"], font=("Helvetica", 12))
     else:
         input_field = tk.Entry(frame_input_bottom, font=("Helvetica", 12))
+    input_fields[label_text] = input_field
     input_field.grid(row=i, column=1, padx=5, pady=3)
 
 # Zone Selection Section (Right Side of frame_left - Column 3)
@@ -111,7 +205,7 @@ gap_3x3 = 3
 offset_3x3 = (20, 20)  
 create_buttons(zone_canvas, (3, 3), offset=offset_3x3, button_size=button_size_3x3, gap=gap_3x3, color="lightblue")
 
-enter_button = tk.Button(frame_zone, text="Enter Prediction", bg="blue", fg="white", font=("Helvetica", 12))
+enter_button = tk.Button(frame_zone, text="Enter Prediction", bg="blue", fg="white", font=("Helvetica", 12), command=validate_inputs())
 enter_button.pack(pady=10)
 
 
@@ -131,7 +225,7 @@ pitch_result_box.grid(row=2, column=0, padx=10, pady=15)
 probabilities_label = tk.Label(frame_results, text="Probabilities", font=("Helvetica", 16, "bold"))
 probabilities_label.grid(row=1, column=1, padx=10, pady=10)
 
-probability_fields = ["Hit In Play", "Strike", "Ball"]
+probability_fields = ["Contact", "Strike", "Ball"]
 for i, field in enumerate(probability_fields, start=2):
     label = tk.Label(frame_results, text=field, font=("Helvetica", 14))
     label.grid(row=i, column=1, sticky="e", padx=10, pady=10)
