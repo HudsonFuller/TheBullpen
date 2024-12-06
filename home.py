@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
-import requests
 import re
+import requests # type: ignore
 
 all_buttons = []
 
@@ -14,10 +14,10 @@ def button_press(button, row, col):
 def zoneChoice():
     for k in range(0,len(all_buttons)):
         if(all_buttons[k].cget("bg") == "red"):
-            if k<8:
-                return k+1
-            elif k>8:
-                return k+2
+            if k<4:
+                return k+11
+            elif k>=4:
+                return k-3
             else:
                 return 0
     
@@ -51,7 +51,7 @@ def post_request():
         "strikes" : input_fields["Strikes"].get(),
     }
     try:
-        response = requests.post('https://127.0.0.1.:5000/add_pitch_entry', json=data)
+        response = requests.post('http://127.0.0.1:5000/add_pitch_entry', json=data)
         response_data = response.json()
         print(response_data)
     except requests.exceptions.RequestException as e:
@@ -60,8 +60,8 @@ def post_request():
 def validate_inputs():
     # Dictionary to store regex patterns for each input field
     regex_patterns = {
-        "Pitcher Hand": r"^(left|right)$",  
-        "Batter Hand": r"^(left|right)$",  
+        "Pitcher Hand": r"^(left|right)|(Left|Right)$",  
+        "Batter Hand": r"^(left|right)|(Left|Right)$",  
         "Pitch Type": r"^.+$", #non empty
         "Velocity": r"^\d+(\.\d{1,2})?$", #number
         "Horizontal Break": r"^-?\d+(\.\d{1,2})?$",  #number
@@ -205,7 +205,7 @@ gap_3x3 = 3
 offset_3x3 = (20, 20)  
 create_buttons(zone_canvas, (3, 3), offset=offset_3x3, button_size=button_size_3x3, gap=gap_3x3, color="lightblue")
 
-enter_button = tk.Button(frame_zone, text="Enter Prediction", bg="blue", fg="white", font=("Helvetica", 12), command=validate_inputs())
+enter_button = tk.Button(frame_zone, text="Enter Prediction", bg="blue", fg="white", font=("Helvetica", 12), command=validate_inputs)
 enter_button.pack(pady=10)
 
 

@@ -1,4 +1,3 @@
-import pandas as pd
 import numpy as np
 from pybaseball import statcast
 from datetime import datetime, timedelta
