@@ -51,7 +51,7 @@ def post_request():
         "strikes" : input_fields["Strikes"].get(),
     }
     try:
-        response = requests.post('https://127.0.0.1.:5000/api/data', json=data)
+        response = requests.post('https://127.0.0.1.:5000/add_pitch_entry', json=data)
         response_data = response.json()
         print(response_data)
     except requests.exceptions.RequestException as e:
