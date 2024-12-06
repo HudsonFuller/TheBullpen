@@ -3,12 +3,14 @@ import numpy as np
 from pybaseball import statcast
 from datetime import datetime, timedelta
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from math import sqrt
 
-treeModel = None
+Model = None
+scaler = None
 
 def refresh_data():
+    global scaler
     # Get today's date
     today = datetime.today()
 
@@ -56,25 +58,24 @@ def refresh_data():
     
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-
-    # split into test/train data
-    
-    #X_train, X_test, y_train, y_test = train_test_split(X_scaled, yArr, test_size=0.15)
     trainModel(X_scaled, y)
 
 def trainModel(X_train, y_train):
-    global treeModel
+    global Model
+    n = int(sqrt(len(X_train)))
     # ML model training
-    treeModel = DecisionTreeClassifier(criterion='entropy', max_depth=10, max_features=None, splitter='random', min_samples_leaf=10, min_samples_split=2)
-    treeModel.fit(X_train, y_train)
+    Model = KNeighborsClassifier(n_neighbors=n, weights='distance', p=1, algorithm='auto')
+    Model.fit(X_train, y_train)
     print('trained')
 
 def getResult(pitch_input):
+    global Model
+    global scaler
     pitch_input = [pitch_input]
-    scaler = StandardScaler()
-    pitch_input = scaler.fit_transform(pitch_input)
-    if treeModel != None:
-        result = treeModel.predict_proba(pitch_input)
+    
+    pitch_input = scaler.transform(pitch_input)
+    if Model != None:
+        result = Model.predict_proba(pitch_input)
         return result
     else:
         return "Model is null"
