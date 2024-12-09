@@ -52,7 +52,7 @@ def post_request():
         "strikes" : input_fields["Strikes"].get(),
     }
     try:
-        response = requests.post('http://127.0.0.1:5000/add_pitch_entry', json=data)
+        response = requests.post('http://flask-pab.azurewebsites.net/add_pitch_entry', json=data)
         response_data = response.json()
         print(response_data)
         display_information(response_data)
