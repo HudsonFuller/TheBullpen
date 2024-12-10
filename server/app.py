@@ -132,10 +132,10 @@ def clear_history():
 
     return jsonify({'message': 'Prediction history cleared!'})
 
+# Intialize and train model
+refresh_data()
 
-# Run the Flask server
+# Run the Flask server locally
 if __name__ == '__main__':
-    # Intialize and train model when server is ran
-    refresh_data()
 
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
