@@ -39,6 +39,11 @@ CREATE TABLE IF NOT EXISTS Predictions (
 """)
 
 
+# Defualt endpoint
+@app.route('/')
+def home():
+    return "Flask app is running!", 200
+
 # Endpoint: Add a new pitch entry
 @app.route('/add_pitch_entry', methods=['POST'])
 def add_pitch_entry():
@@ -138,4 +143,4 @@ refresh_data()
 # Run the Flask server locally
 if __name__ == '__main__':
 
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
