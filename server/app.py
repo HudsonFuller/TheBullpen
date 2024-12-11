@@ -10,33 +10,34 @@ app = Flask(__name__)
 
 # Connect to the database file
 # Create tables if they have not already
-connect = sqlite3.connect('database.db')
-connect.execute("""
-CREATE TABLE IF NOT EXISTS PitchEntries (
-    pitchEntryID INTEGER PRIMARY KEY AUTOINCREMENT,
-    pitcherHandedness TEXT NOT NULL,
-    batterHandedness TEXT NOT NULL,
-    pitchType TEXT NOT NULL,
-    velocity REAL NOT NULL,
-    horizontalBreak REAL NOT NULL,
-    verticalBreak REAL NOT NULL,
-    zone INTEGER NOT NULL,
-    balls INTEGER NOT NULL,
-    strikes INTEGER NOT NULL
-);
-""")
-connect.execute("""
-CREATE TABLE IF NOT EXISTS Predictions (
-    predictionID INTEGER PRIMARY KEY AUTOINCREMENT,
-    result TEXT NOT NULL,
-    contactprob TEXT NOT NULL,
-    strikeprob TEXT NOT NULL,
-    ballprob TEXT NOT NULL,
-    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-    pitchEntryID INTEGER NOT NULL,
-    FOREIGN KEY (pitchEntryID) REFERENCES PitchEntries(pitchEntryID)
-);
-""")
+if not os.path.exists("database.db"):
+    with sqlite3.connect("database.db") as connect:
+        connect.execute("""
+        CREATE TABLE IF NOT EXISTS PitchEntries (
+            pitchEntryID INTEGER PRIMARY KEY AUTOINCREMENT,
+            pitcherHandedness TEXT NOT NULL,
+            batterHandedness TEXT NOT NULL,
+            pitchType TEXT NOT NULL,
+            velocity REAL NOT NULL,
+            horizontalBreak REAL NOT NULL,
+            verticalBreak REAL NOT NULL,
+            zone INTEGER NOT NULL,
+            balls INTEGER NOT NULL,
+            strikes INTEGER NOT NULL
+        );
+        """)
+        connect.execute("""
+        CREATE TABLE IF NOT EXISTS Predictions (
+            predictionID INTEGER PRIMARY KEY AUTOINCREMENT,
+            result TEXT NOT NULL,
+            contactprob TEXT NOT NULL,
+            strikeprob TEXT NOT NULL,
+            ballprob TEXT NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            pitchEntryID INTEGER NOT NULL,
+            FOREIGN KEY (pitchEntryID) REFERENCES PitchEntries(pitchEntryID)
+        );
+        """)
 
 
 # Defualt endpoint
