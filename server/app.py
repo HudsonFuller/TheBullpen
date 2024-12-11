@@ -101,8 +101,8 @@ def add_pitch_entry():
 
 
 # Endpoint: Get prediction history
-@app.route('/get_history/<int:predictionID>', methods=['GET'])
-def get_history(predictionID):
+@app.route('/get_history', methods=['GET'])
+def get_history():
     try:
         # Open a connection and execute the query
         with sqlite3.connect("database.db") as connect:
@@ -111,16 +111,17 @@ def get_history(predictionID):
                 SELECT p.predictionID, p.result, p.contactprob, p.strikeprob, p.ballprob, p.timestamp, pe.pitcherHandedness,
                     pe.batterHandedness, pe.pitchType, pe.velocity, pe.horizontalBreak, pe.verticalBreak, pe.zone, pe.balls, pe.strikes
                 FROM Predictions p
-                JOIN PitchEntries pe ON p.pitchEntryID = pe.pitchEntryID
-                WHERE p.predictionID = ?
-            """, (predictionID,))
-            entry = cursor.fetchone()
+                JOIN PitchEntries pe ON p.pitchEntryID = pe.pitchEntryID            
+            """, ())
+            entries = cursor.fetchall()
 
         # Check if a result was found
-        if entry:
+        if entries:
             # Create a dictionary for the output
             columns = [desc[0] for desc in cursor.description]
-            return jsonify(dict(zip(columns, entry)))
+            results = [dict(zip(columns, row)) for row in entries]
+
+            return jsonify(results)
         else:
             return jsonify({'error': 'Prediction not found'}), 404
     except sqlite3.Error as e:

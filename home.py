@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
 import re
 import requests 
 
@@ -56,8 +57,12 @@ def post_request():
         response_data = response.json()
         print(response_data)
         display_information(response_data)
+        response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+        dataList = response.json()
+        update_history(dataList)
     except requests.exceptions.RequestException as e:
         print(e)
+
 def display_information(response_data):
     data = response_data["prediction"]
 
@@ -83,7 +88,35 @@ def display_information(response_data):
     probability_entries["Strike"].delete(0,10000)
     probability_entries["Strike"].insert(0, probability_data['strike'])
     probability_entries["Strike"].config(state= tk.DISABLED)
-    
+
+def filterJson(data, filter):
+    return sorted(data, key=lambda x: x[filter])
+
+def on_combobox_select(event, data):
+    selected = filter_option.get()
+    history_items = filterJson(data, selected)
+    update_history(history_items)
+
+def on_listbox_select(event):
+    selected_indices = history_listbox.curselection()
+    if selected_indices:  # Check if something is selected
+        selected_index = selected_indices[0]
+        # Display the selected item in a message box
+        messagebox.showinfo(f"Pitch Entry ID: {history_items[selected_index]['pitchEntryID']}",
+                            f"Time Stamp: {history_items[selected_index]['timestamp']}",
+                            f"Pitch Result: {history_items[selected_index]['result']}",
+                            f"Contact Probability: {history_items[selected_index]['contactprob']}",
+                            f"Ball Probability: {history_items[selected_index]['ballprob']}",
+                            f"Strike Probability: {history_items[selected_index]['strikeprob']}",
+                            f"Pitcher Handedness: {history_items[selected_index]['pitcherHandedness']}",
+                            f"Batter Handedness: {history_items[selected_index]['batterHandedness']}",
+                            f"Time Stamp: {history_items[selected_index]['timestamp']}",
+                            f"Pitch Type: {history_items[selected_index]['pitchType']}",
+                            f"Velocity: {history_items[selected_index]['velocity']}",
+                            f"Horizontal Break: {history_items[selected_index]['horizontalBreak']}",
+                            f"Vertical Break: {history_items[selected_index]['verticalBreak']}",
+                            f"Location: {history_items[selected_index]['zone']}",
+                            f"Count: {history_items[selected_index]['balls']}-{history_items[selected_index]['strikes']}")
 
 
 def validate_inputs():
@@ -147,6 +180,13 @@ def validate_inputs():
     post_request()
 
     response_label.config(text="All inputs are valid, Sending to Server")
+
+def update_history(dataList):
+    history_items = dataList
+    history_listbox.delete(0, tk.END)
+    for i in len(history_items):
+        history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
+        history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
 
 # Initialize the main window
 root = tk.Tk()
@@ -251,14 +291,22 @@ for i, field in enumerate(probability_fields, start=2):
 # History Frame (Right Side)
 history_label = tk.Label(frame_history, text="History", font=("Helvetica", 20, "bold"))
 history_label.pack(pady=(20, 20))
+
 filter_label = tk.Label(frame_history, text="Filter by", font=("Helvetica", 16))
 filter_label.pack(pady=10)
-filter_option = ttk.Combobox(frame_history, values=["Option 1", "Option 2"], font=("Helvetica", 14))
+filter_option = ttk.Combobox(frame_history, values=["pitchEntryID", "timestamp","result", "contactprob", "ballprob", "strikeprob", "pitcherHandedness", "batterHandedness", "pitchType", "velocity", "horizontalBreak", "verticalBreak", "zone", "balls", "strikes"], font=("Helvetica", 14))
+filter_option.bind("<<ComboboxSelected>>", on_combobox_select)
 filter_option.pack(pady=10)
 
 history_listbox = tk.Listbox(frame_history, font=("Helvetica", 14))
-for i in range(1, 7):
-    history_listbox.insert(tk.END, f"Entry {i}")
+response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+history_items = response.json()
+print(history_items)
+
+for i in len(history_items):
+    history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
+    history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
+
 history_listbox.pack(fill="both", expand=True, padx=10, pady=10)
 
 # Run the application
