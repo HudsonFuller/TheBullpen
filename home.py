@@ -14,14 +14,13 @@ def button_press(button, row, col):
     button.config(bg="red")
 #Logic for zone selection
 def zoneChoice():
-    for k in range(0,len(all_buttons)):
+    for k in range(len(all_buttons)):
         if(all_buttons[k].cget("bg") == "red"):
             if k<4:
                 return k+11
             elif k>=4:
                 return k-3
-            else:
-                return 0
+    return 0
     
 def create_buttons(canvas, grid_size, offset=(0, 0), button_size=20, gap=5, color="lightblue"):
     buttons = []
@@ -53,11 +52,13 @@ def post_request():
         "strikes" : input_fields["Strikes"].get(),
     }
     try:
-        response = requests.post('http://flask-pab.azurewebsites.net/add_pitch_entry', json=data)
+        #response = requests.post('http://flask-pab.azurewebsites.net/add_pitch_entry', json=data)
+        response = requests.post('http://127.0.0.1:8000/add_pitch_entry', json=data)
         response_data = response.json()
         print(response_data)
         display_information(response_data)
-        response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+        #response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+        response = requests.get('http://127.0.0.1:8000/get_history')
         dataList = response.json()
         update_history(dataList)
     except requests.exceptions.RequestException as e:
@@ -102,21 +103,21 @@ def on_listbox_select(event):
     if selected_indices:  # Check if something is selected
         selected_index = selected_indices[0]
         # Display the selected item in a message box
-        messagebox.showinfo(f"Pitch Entry ID: {history_items[selected_index]['pitchEntryID']}",
-                            f"Time Stamp: {history_items[selected_index]['timestamp']}",
-                            f"Pitch Result: {history_items[selected_index]['result']}",
-                            f"Contact Probability: {history_items[selected_index]['contactprob']}",
-                            f"Ball Probability: {history_items[selected_index]['ballprob']}",
-                            f"Strike Probability: {history_items[selected_index]['strikeprob']}",
-                            f"Pitcher Handedness: {history_items[selected_index]['pitcherHandedness']}",
-                            f"Batter Handedness: {history_items[selected_index]['batterHandedness']}",
-                            f"Time Stamp: {history_items[selected_index]['timestamp']}",
-                            f"Pitch Type: {history_items[selected_index]['pitchType']}",
-                            f"Velocity: {history_items[selected_index]['velocity']}",
-                            f"Horizontal Break: {history_items[selected_index]['horizontalBreak']}",
-                            f"Vertical Break: {history_items[selected_index]['verticalBreak']}",
-                            f"Location: {history_items[selected_index]['zone']}",
-                            f"Count: {history_items[selected_index]['balls']}-{history_items[selected_index]['strikes']}")
+        messagebox.showinfo(title="Prediction Details", message=f"Pitch Entry ID: {history_items[selected_index]['predictionID']}\n" +
+                            f"Time Stamp: {history_items[selected_index]['timestamp']}\n"+
+                            f"Pitch Result: {history_items[selected_index]['result']}\n"+
+                            f"Contact Probability: {history_items[selected_index]['contactprob']}\n"+
+                            f"Ball Probability: {history_items[selected_index]['ballprob']}\n"+
+                            f"Strike Probability: {history_items[selected_index]['strikeprob']}\n"+
+                            f"Pitcher Handedness: {history_items[selected_index]['pitcherHandedness']}\n"+
+                            f"Batter Handedness: {history_items[selected_index]['batterHandedness']}\n"+
+                            f"Time Stamp: {history_items[selected_index]['timestamp']}\n"+
+                            f"Pitch Type: {history_items[selected_index]['pitchType']}\n"+
+                            f"Velocity: {history_items[selected_index]['velocity']}\n"+
+                            f"Horizontal Break: {history_items[selected_index]['horizontalBreak']}\n"+
+                            f"Vertical Break: {history_items[selected_index]['verticalBreak']}\n"+
+                            f"Location: {history_items[selected_index]['zone']}\n"+
+                            f"Count: {history_items[selected_index]['balls']}-{history_items[selected_index]['strikes']}\n")
 
 
 def validate_inputs():
@@ -184,8 +185,8 @@ def validate_inputs():
 def update_history(dataList):
     history_items = dataList
     history_listbox.delete(0, tk.END)
-    for i in len(history_items):
-        history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
+    for i in history_items:
+        history_listbox.insert(tk.END, f"Entry {i['predictionID']}")
         history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
 
 # Initialize the main window
@@ -294,8 +295,8 @@ history_label.pack(pady=(20, 20))
 
 filter_label = tk.Label(frame_history, text="Filter by", font=("Helvetica", 16))
 filter_label.pack(pady=10)
-filter_option = ttk.Combobox(frame_history, values=["pitchEntryID", "timestamp","result", "contactprob", "ballprob", "strikeprob", "pitcherHandedness", "batterHandedness", "pitchType", "velocity", "horizontalBreak", "verticalBreak", "zone", "balls", "strikes"], font=("Helvetica", 14))
-filter_option.bind("<<ComboboxSelected>>", on_combobox_select)
+filter_option = ttk.Combobox(frame_history, values=["predictionID", "timestamp","result", "contactprob", "ballprob", "strikeprob", "pitcherHandedness", "batterHandedness", "pitchType", "velocity", "horizontalBreak", "verticalBreak", "zone", "balls", "strikes"], font=("Helvetica", 14))
+filter_option.bind("<<ComboboxSelected>>", lambda event: on_combobox_select(event, history_items))
 filter_option.pack(pady=10)
 
 history_listbox = tk.Listbox(frame_history, font=("Helvetica", 14))
@@ -306,7 +307,7 @@ print(history_items)
 
 if not 'error' in history_items:
     for i in history_items:
-        history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
+        history_listbox.insert(tk.END, f"Entry {i['predictionID']}")
         history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
 
 history_listbox.pack(fill="both", expand=True, padx=10, pady=10)
