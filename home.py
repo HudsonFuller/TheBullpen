@@ -5,7 +5,7 @@ import re
 import requests 
 
 all_buttons = []
-
+history_items = []
 
 
 def button_press(button, row, col):
@@ -183,6 +183,7 @@ def validate_inputs():
     response_label.config(text="All inputs are valid, Sending to Server")
 
 def update_history(dataList):
+    global history_items
     history_items = dataList
     history_listbox.delete(0, tk.END)
     for i in history_items:
@@ -293,7 +294,7 @@ for i, field in enumerate(probability_fields, start=2):
 history_label = tk.Label(frame_history, text="History", font=("Helvetica", 20, "bold"))
 history_label.pack(pady=(20, 20))
 
-filter_label = tk.Label(frame_history, text="Filter by", font=("Helvetica", 16))
+filter_label = tk.Label(frame_history, text="Sort by", font=("Helvetica", 16))
 filter_label.pack(pady=10)
 filter_option = ttk.Combobox(frame_history, values=["predictionID", "timestamp","result", "contactprob", "ballprob", "strikeprob", "pitcherHandedness", "batterHandedness", "pitchType", "velocity", "horizontalBreak", "verticalBreak", "zone", "balls", "strikes"], font=("Helvetica", 14))
 filter_option.bind("<<ComboboxSelected>>", lambda event: on_combobox_select(event, history_items))
