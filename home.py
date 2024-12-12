@@ -299,13 +299,15 @@ filter_option.bind("<<ComboboxSelected>>", on_combobox_select)
 filter_option.pack(pady=10)
 
 history_listbox = tk.Listbox(frame_history, font=("Helvetica", 14))
-response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+#response = requests.get('http://flask-pab.azurewebsites.net/get_history')
+response = requests.get('http://127.0.0.1:8000/get_history')
 history_items = response.json()
 print(history_items)
 
-for i in len(history_items):
-    history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
-    history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
+if not 'error' in history_items:
+    for i in history_items:
+        history_listbox.insert(tk.END, f"Entry {i['pitchEntryID']}")
+        history_listbox.bind("<<ListboxSelect>>", on_listbox_select)
 
 history_listbox.pack(fill="both", expand=True, padx=10, pady=10)
 
