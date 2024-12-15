@@ -54,13 +54,14 @@ def post_request():
         "strikes" : input_fields["Strikes"].get(),
     }
     try:
-        #response = requests.post('http://flask-pab.azurewebsites.net/add_pitch_entry', json=data)
-        response = requests.post('http://127.0.0.1:5000/add_pitch_entry', json=data)
+        response = requests.post('https://thebullpen-pab.azurewebsites.net/add_pitch_entry', json=data)
+        print(response.status_code, response.text)
+        #response = requests.post('http://127.0.0.1:5000/add_pitch_entry', json=data)
         response_data = response.json()
         print(response_data)
         display_information(response_data)
-        #response = requests.get('http://flask-pab.azurewebsites.net/get_history')
-        response = requests.get('http://127.0.0.1:5000/get_history')
+        response = requests.get('http://thebullpen-pab.azurewebsites.net/get_history')
+        #response = requests.get('http://127.0.0.1:5000/get_history')
         dataList = response.json()
         update_history(dataList)
     except requests.exceptions.RequestException as e:
@@ -305,8 +306,8 @@ reverse_button = tk.Button(frame_history, text="Reverse History", command=revers
 reverse_button.pack(pady=10)
 
 history_listbox = tk.Listbox(frame_history, font=("Helvetica", 14))
-#response = requests.get('http://flask-pab.azurewebsites.net/get_history')
-response = requests.get('http://127.0.0.1:5000/get_history')
+response = requests.get('http://thebullpen-pab.azurewebsites.net/get_history')
+#response = requests.get('http://127.0.0.1:5000/get_history')
 history_items = response.json()
 print(history_items)
 
