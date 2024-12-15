@@ -7,7 +7,9 @@ import requests
 all_buttons = []
 history_items = []
 
-
+def reverse():
+    history_items.reverse()
+    update_history(history_items)
 def button_press(button, row, col):
     for item in all_buttons:
         item.config(bg = "lightblue")
@@ -299,6 +301,8 @@ filter_label.pack(pady=10)
 filter_option = ttk.Combobox(frame_history, values=["predictionID", "timestamp","result", "contactprob", "ballprob", "strikeprob", "pitcherHandedness", "batterHandedness", "pitchType", "velocity", "horizontalBreak", "verticalBreak", "zone", "balls", "strikes"], font=("Helvetica", 14))
 filter_option.bind("<<ComboboxSelected>>", lambda event: on_combobox_select(event, history_items))
 filter_option.pack(pady=10)
+reverse_button = tk.Button(frame_history, text="Reverse History", command=reverse, font = ("Helvetica", 14))
+reverse_button.pack(pady=10)
 
 history_listbox = tk.Listbox(frame_history, font=("Helvetica", 14))
 #response = requests.get('http://flask-pab.azurewebsites.net/get_history')
